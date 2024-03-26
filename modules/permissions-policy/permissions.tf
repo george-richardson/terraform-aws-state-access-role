@@ -38,7 +38,7 @@ locals {
   s3_resources = {
     for type, state_definitions in local.s3_state_definitions : type => sort(distinct(flatten([for state_definition in state_definitions :
       concat(
-        state_definition.require_workspace_usage ? [] : ["${var.state_bucket_arn}/${state_definition.key}"],
+        state_definition.allow_default_workspace ? ["${var.state_bucket_arn}/${state_definition.key}"] : [],
         [
           for workspace in state_definition.workspaces :
           "${var.state_bucket_arn}/${state_definition.workspace_key_prefix}/${workspace}/${state_definition.key}"
@@ -54,7 +54,7 @@ locals {
   # or ["state-bucket-name/workspace-prefix/workspace/terraform.tfstate", "state-bucket-name/workspace-prefix/workspace/terraform.tfstate-md5"]
   dynamo_key_filters = sort(distinct(flatten([for state_definition in concat(var.can_apply, var.can_plan) :
     concat(
-      state_definition.require_workspace_usage ? [] : ["${local.state_bucket_name}/${state_definition.key}"],
+      state_definition.allow_default_workspace ? ["${local.state_bucket_name}/${state_definition.key}"] : [],
       [
         for workspace in state_definition.workspaces :
         "${local.state_bucket_name}/${state_definition.workspace_key_prefix}/${workspace}/${state_definition.key}"

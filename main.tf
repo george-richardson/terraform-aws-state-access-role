@@ -5,7 +5,7 @@ resource "aws_iam_role" "this" {
 }
 
 data "aws_iam_policy_document" "trust" {
-  source_policy_documents = var.trust_policy_source_policy_documents
+  source_policy_documents = [var.trust_policy]
 }
 
 resource "aws_iam_role_policy" "inline_policy" {
