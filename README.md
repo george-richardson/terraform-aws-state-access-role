@@ -174,7 +174,7 @@ module "access_role" {
 <details>
 <summary>See the permissions policy generated from the above code.</summary>
 
-```
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
