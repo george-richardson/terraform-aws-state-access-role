@@ -1,5 +1,5 @@
 variables {
-  role_name = "simple-apply-test"
+  role_name = "simple-plan-test"
 }
 
 run "harness" {
@@ -15,7 +15,7 @@ run "system_under_test" {
     state_bucket_arn = run.harness.state_bucket_arn
     lock_table_arn   = run.harness.lock_table_arn
 
-    can_apply = [{
+    can_plan = [{
       key = "terraform.tfstate"
     }]
   }
@@ -103,7 +103,7 @@ run "cannot_read_other_workspace_state_file" {
   }
 }
 
-run "can_write_default_workspace_state_file" {
+run "cannot_write_default_workspace_state_file" {
   module {
     source = "./tests/policy_simulation"
   }
@@ -115,8 +115,8 @@ run "can_write_default_workspace_state_file" {
   }
 
   assert {
-    condition     = output.test_results.all_allowed
-    error_message = "Cannot write default workspace state file."
+    condition     = !output.test_results.all_allowed
+    error_message = "Can write default workspace state file."
   }
 }
 

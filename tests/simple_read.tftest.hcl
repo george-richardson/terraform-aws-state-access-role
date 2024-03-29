@@ -1,5 +1,5 @@
 variables {
-  role_name = "simple-apply-test"
+  role_name = "simple-read-test"
 }
 
 run "harness" {
@@ -15,7 +15,7 @@ run "system_under_test" {
     state_bucket_arn = run.harness.state_bucket_arn
     lock_table_arn   = run.harness.lock_table_arn
 
-    can_apply = [{
+    can_read = [{
       key = "terraform.tfstate"
     }]
   }
@@ -103,7 +103,7 @@ run "cannot_read_other_workspace_state_file" {
   }
 }
 
-run "can_write_default_workspace_state_file" {
+run "cannot_write_default_workspace_state_file" {
   module {
     source = "./tests/policy_simulation"
   }
@@ -115,8 +115,8 @@ run "can_write_default_workspace_state_file" {
   }
 
   assert {
-    condition     = output.test_results.all_allowed
-    error_message = "Cannot write default workspace state file."
+    condition     = !output.test_results.all_allowed
+    error_message = "Can write default workspace state file."
   }
 }
 
@@ -137,7 +137,7 @@ run "cannot_write_other_workspace_state_file" {
   }
 }
 
-run "can_read_default_workspace_lock" {
+run "cannot_read_default_workspace_lock" {
   module {
     source = "./tests/policy_simulation"
   }
@@ -156,8 +156,8 @@ run "can_read_default_workspace_lock" {
   }
 
   assert {
-    condition     = output.test_results.all_allowed
-    error_message = "Cannot read lock for default workspace."
+    condition     = !output.test_results.all_allowed
+    error_message = "Can read lock for default workspace."
   }
 }
 
@@ -185,7 +185,7 @@ run "cannot_read_other_workspace_lock" {
   }
 }
 
-run "can_read_default_workspace_lock_hash" {
+run "cannot_read_default_workspace_lock_hash" {
   module {
     source = "./tests/policy_simulation"
   }
@@ -204,8 +204,8 @@ run "can_read_default_workspace_lock_hash" {
   }
 
   assert {
-    condition     = output.test_results.all_allowed
-    error_message = "Cannot read lock hash for default workspace."
+    condition     = !output.test_results.all_allowed
+    error_message = "Can read lock hash for default workspace."
   }
 }
 
@@ -233,7 +233,7 @@ run "cannot_read_other_workspace_lock_hash" {
   }
 }
 
-run "can_write_default_workspace_lock" {
+run "cannot_write_default_workspace_lock" {
   module {
     source = "./tests/policy_simulation"
   }
@@ -252,8 +252,8 @@ run "can_write_default_workspace_lock" {
   }
 
   assert {
-    condition     = output.test_results.all_allowed
-    error_message = "Cannot write lock for default workspace."
+    condition     = !output.test_results.all_allowed
+    error_message = "Can write lock for default workspace."
   }
 }
 
@@ -281,7 +281,7 @@ run "cannot_write_other_workspace_lock" {
   }
 }
 
-run "can_write_default_workspace_lock_hash" {
+run "cannot_write_default_workspace_lock_hash" {
   module {
     source = "./tests/policy_simulation"
   }
@@ -300,8 +300,8 @@ run "can_write_default_workspace_lock_hash" {
   }
 
   assert {
-    condition     = output.test_results.all_allowed
-    error_message = "Cannot write lock hash for default workspace."
+    condition     = !output.test_results.all_allowed
+    error_message = "Can write lock hash for default workspace."
   }
 }
 
