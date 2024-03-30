@@ -248,6 +248,9 @@ module "access_role" {
 
 </details>
 
+### Working with encrypted state
+
+You can pass in `state_bucket_kms_key_arn` and `lock_table_kms_key_arn` to grant least privilege permissions for underlying KMS keys.
 
 ### Permissions Policy Submodule
 
