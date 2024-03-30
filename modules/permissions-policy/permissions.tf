@@ -9,8 +9,15 @@ locals {
   # ListObjects (s3:ListBucket) is only used for `terraform workspace list`. 
   s3_list_prefix_filters = sort(distinct(flatten([for state_definition in concat(var.can_read, var.can_plan, var.can_apply) :
     concat(
-      [state_definition.key], # Required to prevent a 403 during terraform init
-      length(state_definition.workspaces) > 0 ? ["${state_definition.workspace_key_prefix}/"] : []
+      # Required for terraform init
+      [state_definition.key],
+      # Required for terraform workspace list
+      length(state_definition.workspaces) > 0 ? ["${state_definition.workspace_key_prefix}/"] : [],
+      # Required for terraform workspace new
+      [
+        for workspace in state_definition.workspaces :
+        "${state_definition.workspace_key_prefix}/${workspace}/${state_definition.key}"
+      ]
     )
   ])))
 
