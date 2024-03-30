@@ -24,9 +24,21 @@ variable "state_bucket_arn" {
   description = "The ARN of the S3 bucket where the state files are stored."
 }
 
+variable "state_bucket_kms_key_arn" {
+  type        = string
+  description = "The ARN of the KMS key used to encrypt the state files."
+  default     = null
+}
+
 variable "lock_table_arn" {
   type        = string
   description = "The ARN of the DynamoDB table used for state locking. If not provided, only S3 permissions will be generated."
+  default     = null
+}
+
+variable "lock_table_kms_key_arn" {
+  type        = string
+  description = "The ARN of the KMS key used to encrypt the lock table."
   default     = null
 }
 

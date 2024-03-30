@@ -68,6 +68,12 @@ locals {
       ]
     )
   ])))
+
+  # Add permissions to encrypt objects using KMS key, only if S3 write permissions are granted.
+  add_s3_encryption_statement = var.state_bucket_kms_key_arn != null && length(local.s3_resources["write"]) > 0
+  # Add permissions to decrypt objects using KMS key, only if S3 read permissions are granted and permissions have not
+  # already been granted via the encryption statement.
+  add_s3_decryption_statement = var.state_bucket_kms_key_arn != null && length(local.s3_resources["read"]) > 0 && !local.add_s3_encryption_statement
 }
 
 data "aws_iam_policy_document" "permissions" {
@@ -105,6 +111,36 @@ data "aws_iam_policy_document" "permissions" {
   }
 
   dynamic "statement" {
+    for_each = local.add_s3_encryption_statement ? ["create"] : []
+    content {
+      sid       = "S3Encrypt"
+      actions   = ["kms:Encrypt", "kms:Decrypt", "kms:GenerateDataKey"]
+      resources = [var.state_bucket_kms_key_arn]
+
+      condition {
+        test     = "StringLike"
+        variable = "kms:ViaService"
+        values   = ["s3.*.amazonaws.com"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = local.add_s3_decryption_statement ? ["create"] : []
+    content {
+      sid       = "S3Decrypt"
+      actions   = ["kms:Decrypt"]
+      resources = [var.state_bucket_kms_key_arn]
+
+      condition {
+        test     = "StringLike"
+        variable = "kms:ViaService"
+        values   = ["s3.*.amazonaws.com"]
+      }
+    }
+  }
+
+  dynamic "statement" {
     for_each = var.lock_table_arn != null && length(local.dynamo_key_filters) > 0 ? ["create"] : []
     content {
       sid       = "DynamoWrite"
@@ -115,6 +151,21 @@ data "aws_iam_policy_document" "permissions" {
         test     = "ForAllValues:StringLike"
         variable = "dynamodb:LeadingKeys"
         values   = flatten([for filter in local.dynamo_key_filters : [filter, "${filter}-md5"]])
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.lock_table_kms_key_arn != null && length(local.dynamo_key_filters) > 0 ? ["create"] : []
+    content {
+      sid       = "DynamoEncrypt"
+      actions   = ["kms:Encrypt", "kms:Decrypt"]
+      resources = [var.lock_table_kms_key_arn]
+
+      condition {
+        test     = "StringLike"
+        variable = "kms:ViaService"
+        values   = ["dynamodb.*.amazonaws.com"]
       }
     }
   }

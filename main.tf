@@ -17,9 +17,11 @@ resource "aws_iam_role_policy" "inline_policy" {
 module "permissions_policy" {
   source = "./modules/permissions-policy"
 
-  state_bucket_arn       = var.state_bucket_arn
-  lock_table_arn         = var.lock_table_arn
-  allow_full_bucket_list = var.allow_full_bucket_list
+  state_bucket_arn         = var.state_bucket_arn
+  state_bucket_kms_key_arn = var.state_bucket_kms_key_arn
+  lock_table_arn           = var.lock_table_arn
+  lock_table_kms_key_arn   = var.lock_table_kms_key_arn
+  allow_full_bucket_list   = var.allow_full_bucket_list
 
   can_read  = var.can_read
   can_plan  = var.can_plan
