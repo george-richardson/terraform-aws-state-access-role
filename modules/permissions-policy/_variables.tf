@@ -28,7 +28,7 @@ variable "allow_full_bucket_list" {
 }
 
 variable "can_read" {
-  description = <<EOF
+  description = <<-EOF
     Backend configurations that can be read. This does not allow locking of state, useful when using terraform_remote_state data sources.
 
     Fields:
@@ -47,7 +47,7 @@ variable "can_read" {
 }
 
 variable "can_plan" {
-  description = <<EOF
+  description = <<-EOF
     Backend configurations that can be planned. State locking is allowed here for use in plans, however write access to the state bucket is prevented. 
     WARNING: principals will be able to start apply runs using these permissions, but won't be able to write changes to state. Care should be take to prevent principals from making changes to resources as well as state.
 
@@ -67,7 +67,7 @@ variable "can_plan" {
 }
 
 variable "can_apply" {
-  description = <<EOF
+  description = <<-EOF
     Backend configurations that can be applied. This allows locking of state and writing to the state bucket.
 
     Fields:
